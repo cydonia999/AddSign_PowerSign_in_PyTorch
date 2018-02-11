@@ -9,6 +9,7 @@ from torch.optim import SGD
 from torch.autograd import Variable
 from torch import sparse
 from torch.optim.lr_scheduler import LambdaLR, StepLR, MultiStepLR, ExponentialLR, ReduceLROnPlateau
+from torch.optim.sign_internal_decay import LinearInternalDecay, CosineInternalDecay, RestartCosineInternalDecay
 from common import TestCase, run_tests
 
 
@@ -409,6 +410,90 @@ class TestOptim(TestCase):
             lambda weight, bias: optim.LBFGS([weight, bias]),
             ignore_multidevice=True
         )
+
+    def test_addsign(self):
+        self._test_basic_cases(
+            lambda weight, bias: optim.AddSign([weight, bias], lr=1e-3)
+        )
+        T_max = 20
+        decays = [
+            LinearInternalDecay(T_max),
+            CosineInternalDecay(T_max),
+            CosineInternalDecay(T_max, num_periods=0.5),
+            CosineInternalDecay(T_max, num_periods=2),
+            RestartCosineInternalDecay(T_max),
+            RestartCosineInternalDecay(T_max, num_periods=1),
+            RestartCosineInternalDecay(T_max, num_periods=5),
+        ]
+        for decay in decays:
+            self._test_basic_cases(
+                lambda weight, bias: optim.AddSign([weight, bias], lr=1e-3, sign_internal_decay=decay)
+            )
+
+        self._test_basic_cases(
+            lambda weight, bias: optim.AddSign(
+                self._build_params_dict(weight, bias, lr=1e-2),
+                lr=1e-3)
+        )
+        T_max = 200
+        decays = [
+            LinearInternalDecay(T_max),
+            CosineInternalDecay(T_max),
+            CosineInternalDecay(T_max, num_periods=0.5),
+            CosineInternalDecay(T_max, num_periods=2),
+            RestartCosineInternalDecay(T_max),
+            RestartCosineInternalDecay(T_max, num_periods=1),
+            RestartCosineInternalDecay(T_max, num_periods=5),
+        ]
+        for decay in decays:
+            self._test_basic_cases(
+                lambda weight, bias: optim.AddSign(
+                    self._build_params_dict(weight, bias, lr=1e-2),
+                    lr=1e-3, sign_internal_decay=decay)
+            )
+
+    def test_powersign(self):
+        self._test_basic_cases(
+            lambda weight, bias: optim.PowerSign([weight, bias], lr=1e-3)
+        )
+        T_max = 20
+        decays = [
+            lambda x: 2 - x / float(T_max),
+            LinearInternalDecay(T_max),
+            CosineInternalDecay(T_max),
+            CosineInternalDecay(T_max, num_periods=0.5),
+            CosineInternalDecay(T_max, num_periods=2),
+            RestartCosineInternalDecay(T_max),
+            RestartCosineInternalDecay(T_max, num_periods=1),
+            RestartCosineInternalDecay(T_max, num_periods=5),
+        ]
+        for decay in decays:
+            self._test_basic_cases(
+                lambda weight, bias: optim.PowerSign([weight, bias], lr=1e-3, sign_internal_decay=decay)
+            )
+
+        self._test_basic_cases(
+            lambda weight, bias: optim.PowerSign(
+                self._build_params_dict(weight, bias, lr=1e-2),
+                lr=1e-3)
+        )
+        T_max = 200
+        decays = [
+            lambda x: 2 - x / float(T_max),
+            LinearInternalDecay(T_max),
+            CosineInternalDecay(T_max),
+            CosineInternalDecay(T_max, num_periods=0.5),
+            CosineInternalDecay(T_max, num_periods=2),
+            RestartCosineInternalDecay(T_max),
+            RestartCosineInternalDecay(T_max, num_periods=1),
+            RestartCosineInternalDecay(T_max, num_periods=5),
+        ]
+        for decay in decays:
+            self._test_basic_cases(
+                lambda weight, bias: optim.PowerSign(
+                    self._build_params_dict(weight, bias, lr=1e-2),
+                    lr=1e-3, sign_internal_decay=decay)
+            )
 
     def test_invalid_param_type(self):
         with self.assertRaises(TypeError):

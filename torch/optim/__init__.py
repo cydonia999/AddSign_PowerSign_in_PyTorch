@@ -14,6 +14,8 @@ from .asgd import ASGD
 from .sgd import SGD
 from .rprop import Rprop
 from .rmsprop import RMSprop
+from .addsign import AddSign
+from .powersign import PowerSign
 from .optimizer import Optimizer
 from .lbfgs import LBFGS
 from . import lr_scheduler
@@ -26,5 +28,7 @@ del asgd
 del sgd
 del rprop
 del rmsprop
+del addsign
+del powersign
 del optimizer
 del lbfgs
