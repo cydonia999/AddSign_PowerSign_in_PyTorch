@@ -9,7 +9,7 @@ where `ld` and `cd` are internal decay functions defined by
 
 ![internal decay functions](https://github.com/cydonia999/AddSign_PowerSign_in_PyTorch/blob/master/images/decay.png?raw=true)
 
-AddSign and PowerSign optimizers are implemented, and are
+In this repo AddSign and PowerSign optimizers are implemented, and are
 PyTorch counterparts of TensorFlow's 
 `AddSignOptimizer`[(link)](https://www.tensorflow.org/versions/master/api_docs/python/tf/contrib/opt/AddSignOptimizer) 
 and 
@@ -17,14 +17,13 @@ and
 respectively.
 
 This repo also has the internal decays(linear, cyclical and restart decays) above
-(see `sign_decay.py`[(link)](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/opt/python/training/sign_decay.py)
-for TensorFlow version).
+(for TensorFlow version see `sign_decay.py`[(link)](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/opt/python/training/sign_decay.py) ).
 
 These are implemented on top of Pytorch version `0.4.0a0+709fcfd`.
 
 # Usage
 
-- When not using internal decay functions, just call them like other optimizers:
+- When not using internal decay functions, just call AddSign or PowerSign like other optimizers:
 ```python
 import torch.optim as optim
 ...
@@ -44,6 +43,9 @@ decay = LinearInternalDecay(T_max) # linear deacy
 decay = CosineInternalDecay(T_max) # cyclical decay
 # or
 decay = RestartCosineInternalDecay(T_max) # restart decay
+# or
+decay = lambda x: 2 - x / float(T_max) # custom decay
+
 
 optimizer = optim.AddSign(net.parameters(), lr=0.001, sign_internal_decay=decay)
 # or
@@ -88,7 +90,7 @@ Restart decay in [1].
 
 # Experiments
 
-I used a simple CNN code(`cifar10_tutorial.py`) in PyTorch [tutorials](http://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html),
+I used a simple CNN(`cifar10_tutorial.py`) in PyTorch [tutorials](http://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html),
 using CIFAR-10.
 
 - Comparing AddSign with SGD and Adam
