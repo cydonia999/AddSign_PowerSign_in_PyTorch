@@ -415,8 +415,9 @@ class TestOptim(TestCase):
         self._test_basic_cases(
             lambda weight, bias: optim.AddSign([weight, bias], lr=1e-3)
         )
-        T_max = 20
+        T_max = 200
         decays = [
+            lambda x: 2 - x / float(T_max),
             LinearInternalDecay(T_max),
             CosineInternalDecay(T_max),
             CosineInternalDecay(T_max, num_periods=0.5),
@@ -437,6 +438,7 @@ class TestOptim(TestCase):
         )
         T_max = 200
         decays = [
+            lambda x: 2 - x / float(T_max),
             LinearInternalDecay(T_max),
             CosineInternalDecay(T_max),
             CosineInternalDecay(T_max, num_periods=0.5),
@@ -456,7 +458,7 @@ class TestOptim(TestCase):
         self._test_basic_cases(
             lambda weight, bias: optim.PowerSign([weight, bias], lr=1e-3)
         )
-        T_max = 20
+        T_max = 200
         decays = [
             lambda x: 2 - x / float(T_max),
             LinearInternalDecay(T_max),

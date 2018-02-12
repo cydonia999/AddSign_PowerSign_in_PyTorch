@@ -71,7 +71,7 @@ class PowerSign(Optimizer):
                 # Decay the first moment running average coefficient
                 exp_avg.mul_(beta).add_(1 - beta, grad)
 
-                power_sign = torch.pow(alpha, internal_decay * grad.sign() * exp_avg.sign()) * grad
+                power_sign = grad.mul(torch.pow(alpha, internal_decay * grad.sign() * exp_avg.sign()))
                 p.data.add_(-group['lr'], power_sign)
 
         return loss

@@ -1,3 +1,121 @@
+# PowerSign and AddSign optimizers in PyTorch
+
+In [1] PowerSign and AddSign update rules(see the formulation below) are discovered 
+by training a Recurrent Neural Network controller with Reinforcement Learning.
+
+![PowerSign and AddSign](https://github.com/cydonia999/AddSign_PowerSign_in_PyTorch/blob/master/images/powersign_addsign.png?raw=true)
+
+where `ld` and `cd` are internal decay functions defined by
+
+![internal decay functions](https://github.com/cydonia999/AddSign_PowerSign_in_PyTorch/blob/master/images/decay.png?raw=true)
+
+AddSign and PowerSign optimizers are implemented, and are
+PyTorch counterparts of TensorFlow's 
+`AddSignOptimizer`[(link)](https://www.tensorflow.org/versions/master/api_docs/python/tf/contrib/opt/AddSignOptimizer) 
+and 
+`PowerSignOptimizer`[(link)](https://www.tensorflow.org/versions/master/api_docs/python/tf/contrib/opt/PowerSignOptimizer),
+respectively.
+
+This repo also has the internal decays(linear, cyclical and restart decays) above
+(see `sign_decay.py`[(link)](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/opt/python/training/sign_decay.py)
+for TensorFlow version).
+
+These are implemented on top of Pytorch version `0.4.0a0+709fcfd`.
+
+# Usage
+
+- When not using internal decay functions, just call them like other optimizers:
+```python
+import torch.optim as optim
+...
+optimizer = optim.AddSign(net.parameters(), lr=0.001)
+# or
+optimizer = optim.PowerSign(net.parameters(), lr=0.001)
+```
+
+- When using internal decay functions, first define a decay class and pass it to PowerSign/AddSign:
+```python
+import torch.optim as optim
+from torch.optim.sign_internal_decay import LinearInternalDecay, CosineInternalDecay, RestartCosineInternalDecay
+...
+T_max = 100 # the total number of training steps. Note that this is not epoch number.
+decay = LinearInternalDecay(T_max) # linear deacy
+# or
+decay = CosineInternalDecay(T_max) # cyclical decay
+# or
+decay = RestartCosineInternalDecay(T_max) # restart decay
+
+optimizer = optim.AddSign(net.parameters(), lr=0.001, sign_internal_decay=decay)
+# or
+optimizer = optim.PowerSign(net.parameters(), lr=0.001, sign_internal_decay=decay)
+```
+
+# Parameters
+
+### optim.AddSign/PowerSign(params, lr=0.01, beta=0.9, alpha=1, sign_internal_decay=None)
+AddSign or PowerSign optimizers in [1].
+```     
+        params (iterable): iterable of parameters to optimize or dicts defining parameter groups
+        lr (float, optional): learning rate (default: 1e-3)
+        beta (float, optional): coefficients used for computing
+            running averages of gradient (default: 0.9)
+        alpha (float, optional): term added to 
+            the internal_decay * sign(g) * sign(m) (default: 1)
+        sign_internal_decay(callable, optional): a function that returns
+            an internal decay calculated based on the current training step and
+            the total number of training steps.
+            If None, the internal decay is assumed to be 1.
+``` 
+### torch.optim.sign_internal_decay.LinearInternalDecay(T_max)
+Linear decay in [1].
+```
+        T_max (int): the total number of training steps to be used to compute internal decays
+```
+### torch.optim.sign_internal_decay.CosineInternalDecay(T_max, num_periods=0.5, zero_after=None)
+Cyclical decay in [1].
+```
+        T_max (int): the total number of training steps to be used to compute internal decays
+        num_periods: number of periods of cosine from 0 to T_max (default: 0.5)
+        zero_after: if not None, number after which 0 is returned
+```
+### torch.optim.sign_internal_decay.RestartCosineInternalDecay(T_max, num_periods=1, zero_after=None)
+Restart decay in [1].
+```
+        T_max (int): the total number of training steps to be used to compute internal decays
+        num_periods: number of half periods of cosine from 0 to T_max (default: 1)
+        zero_after: if not None, number after which 0 is returned
+```
+
+# Experiments
+
+I used a simple CNN code(`cifar10_tutorial.py`) in PyTorch [tutorials](http://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html),
+using CIFAR-10.
+
+- Comparing AddSign with SGD and Adam
+
+`restart_10` means `RestartCosineInternalDecay` with `num_periods=10`.
+
+![Comparing PowerSign with SGD and Adam](https://github.com/cydonia999/AddSign_PowerSign_in_PyTorch/blob/master/images/cifar10_addsign.png?raw=true)
+
+- Comparing PowerSign with SGD and Adam
+
+![Comparing PowerSign with SGD and Adam](https://github.com/cydonia999/AddSign_PowerSign_in_PyTorch/blob/master/images/cifar10_powersign.png?raw=true)
+
+# References
+
+1. Irwan Bello, Barret Zoph, Vijay Vasudevan, Quoc V. Le,
+     Neural Optimizer Search with Reinforcement Learning,
+     ICML 2017.
+     [arXiv](https://arxiv.org/abs/1709.07417)
+
+2. Irwan Bello, Barret Zoph, Vijay Vasudevan, Quoc V. Le,
+     Neural Optimizer Search with Reinforcement Learning,
+     Proceedings of the 34th International Conference on Machine Learning, PMLR 70:459-468, 2017.
+     [PMLR](http://proceedings.mlr.press/v70/bello17a.html)
+
+-----------------
+-----------------
+
 <p align="center"><img width="40%" src="docs/source/_static/img/pytorch-logo-dark.png" /></p>
 
 --------------------------------------------------------------------------------

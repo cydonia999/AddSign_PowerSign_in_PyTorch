@@ -67,7 +67,7 @@ class AddSign(Optimizer):
 
                 # Decay the first moment running average coefficient
                 exp_avg.mul_(beta).add_(1 - beta, grad)
-                add_sign = (alpha + internal_decay * grad.sign() * exp_avg.sign()) * grad
+                add_sign = grad.mul(alpha + internal_decay * grad.sign() * exp_avg.sign())
                 p.data.add_(-group['lr'], add_sign)
 
         return loss
