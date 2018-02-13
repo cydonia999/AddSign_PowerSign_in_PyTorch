@@ -90,8 +90,11 @@ Restart decay in [1].
 
 # Experiments
 
-I used a simple CNN(`cifar10_tutorial.py`) in PyTorch [tutorials](http://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html),
-using CIFAR-10.
+I used a modified tutorial CNN code([tutorial/cifar10_tutorial.py](https://github.com/cydonia999/AddSign_PowerSign_in_PyTorch/blob/master/test/cifar10_tutorial.py)) using CIFAR-10.
+This code is essentially the same as [tutorials](http://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html).
+
+Accuracy for test data set is shown in the figures.
+
 
 - Comparing AddSign with SGD and Adam
 
