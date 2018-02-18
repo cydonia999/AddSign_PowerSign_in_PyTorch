@@ -1,6 +1,6 @@
 # PowerSign and AddSign optimizers in PyTorch
 
-In [1] PowerSign and AddSign update rules(see the formulation below) are discovered 
+In the paper[1] PowerSign and AddSign update rules(see the formulation below) are discovered 
 by training a Recurrent Neural Network controller with Reinforcement Learning.
 
 ![PowerSign and AddSign](https://github.com/cydonia999/AddSign_PowerSign_in_PyTorch/blob/master/images/powersign_addsign.png?raw=true)
@@ -9,17 +9,17 @@ where `ld` and `cd` are internal decay functions defined by
 
 ![internal decay functions](https://github.com/cydonia999/AddSign_PowerSign_in_PyTorch/blob/master/images/decay.png?raw=true)
 
-In this repo AddSign and PowerSign optimizers are implemented, and are
+In this repo the PowerSign and AddSign optimizers are implemented, and are
 PyTorch counterparts of TensorFlow's 
-`AddSignOptimizer`[(link)](https://www.tensorflow.org/versions/master/api_docs/python/tf/contrib/opt/AddSignOptimizer) 
-and 
 `PowerSignOptimizer`[(link)](https://www.tensorflow.org/versions/master/api_docs/python/tf/contrib/opt/PowerSignOptimizer),
+and 
+`AddSignOptimizer`[(link)](https://www.tensorflow.org/versions/master/api_docs/python/tf/contrib/opt/AddSignOptimizer) 
 respectively.
 
-This repo also has the internal decays(linear, cyclical and restart decays) above
+This repo also has the internal decay functions(linear, cyclical and restart decays) described above
 (for TensorFlow version see `sign_decay.py`[(link)](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/opt/python/training/sign_decay.py) ).
 
-These are implemented on top of Pytorch version `0.4.0a0+709fcfd`.
+These are implemented on top of Pytorch version `0.4.0a0`[(709fcfd)](https://github.com/pytorch/pytorch/commit/709fcfda8a2fb3f3da33cace584e6d5592210a9c).
 
 # Usage
 
